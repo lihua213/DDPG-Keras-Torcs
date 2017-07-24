@@ -18,7 +18,7 @@ import timeit
 
 OU = OU()       #Ornstein-Uhlenbeck Process
 
-def playGame(train_indicator=0):    #1 means Train, 0 means simply Run
+def playGame(train_indicator=1):    #1 means Train, 0 means simply Run
     BUFFER_SIZE = 100000
     BATCH_SIZE = 32
     GAMMA = 0.99
@@ -133,8 +133,9 @@ def playGame(train_indicator=0):    #1 means Train, 0 means simply Run
 
             total_reward += r_t
             s_t = s_t1
-        
-            print("Episode", i, "Step", step, "Action", a_t, "Reward", r_t, "Loss", loss)
+
+            if np.mod(step, 30) == 0:
+                print("Episode", i, "Step", step, "Action", a_t, "Reward", r_t, "Loss", loss)
         
             step += 1
             if done:

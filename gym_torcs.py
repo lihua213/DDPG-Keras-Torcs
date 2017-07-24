@@ -12,7 +12,7 @@ import time
 
 class TorcsEnv:
     terminal_judge_start = 100  # If after 100 timestep still no progress, terminated
-    termination_limit_progress = 5  # [km/h], episode terminates if car is running slower than this limit
+    termination_limit_progress = 0.5  # [km/h], episode terminates if car is running slower than this limit
     default_speed = 50
 
     initial_reset = True
@@ -60,6 +60,9 @@ class TorcsEnv:
             self.observation_space = spaces.Box(low=low, high=high)
 
     def step(self, u):
+
+        #self.time_step = 0
+
        #print("Step")
         # convert thisAction to the actual torcs actionstr
         client = self.client
@@ -148,15 +151,20 @@ class TorcsEnv:
         #    episode_terminate = True
         #    client.R.d['meta'] = True
 
-        #if self.terminal_judge_start < self.time_step: # Episode terminates if the progress of agent is small
-        #    if progress < self.termination_limit_progress:
-        #        print("No progress")
-        #        episode_terminate = True
-        #        client.R.d['meta'] = True
+        if self.terminal_judge_start < self.time_step: # Episode terminates if the progress of agent is small
+           if progress < self.termination_limit_progress:
+                if self.time_step >  20 :
+                    print   self.time_step
+                    print("No progress")
+                    episode_terminate = True
+                    client.R.d['meta'] = True
 
         if np.cos(obs['angle']) < 0: # Episode is terminated if the agent runs backward
-            episode_terminate = True
-            client.R.d['meta'] = True
+            if self.time_step >  20 :
+                print   self.time_step
+                print("backward")
+                episode_terminate = True
+                client.R.d['meta'] = True
 
 
         if client.R.d['meta'] is True: # Send a reset signal
